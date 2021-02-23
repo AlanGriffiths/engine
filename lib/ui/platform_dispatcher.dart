@@ -920,6 +920,114 @@ class PlatformDispatcher {
   ///    requests from the embedder.
   String get defaultRouteName => _defaultRouteName();
   String _defaultRouteName() native 'PlatformConfiguration_defaultRouteName';
+
+  /// Creates a new regular view and returns the view created.
+  ///
+  /// The size obtained and the one requested may not match, depending
+  /// on what the platform was able to accommodate.
+  ///
+  /// The future returns when the view has been created, and the view has been
+  /// added to [views].
+  Future<FlutterWindow> createRegularWindow(Size size) async {
+    throw new UnsupportedError('RegularWindow is not currently supported on this system');
+    // Awaits the platform view creation response, and calls onViewCreated
+    // before returning.
+  }
+
+  /// Creates a new dialog view and returns the view created.
+  ///
+  /// The size obtained and the one requested may not match, depending
+  /// on what the platform was able to accommodate.
+  ///
+  /// The future returns when the view has been created, and the view has been
+  /// added to [views].
+  Future<FlutterWindow> createDialogWindow(
+      Size size,
+      FlutterWindow? parent) async {
+    throw new UnsupportedError('DialogWindow is not currently supported on this system');
+    // Awaits the platform view creation response, and calls onViewCreated
+    // before returning.
+    // In the event that the platform does not support dialogs directly, the
+    // returned FlutterView may be one rendered on the parent
+  }
+
+  /// Creates a new popup view and returns the view created.
+  ///
+  /// The [anchorRect] specifies the anchor rectangle within the parent surface
+  /// that the child surface will be placed relative to. The rectangle is
+  /// relative to the window geometry of the parent surface.
+  ///
+  /// The anchor rectangle may not extend outside the window geometry of the
+  /// parent surface.
+  ///
+  /// The size obtained and the one requested may not match, depending
+  /// on what the platform was able to accommodate.
+  ///
+  /// The future returns when the view has been created, and the view has been
+  /// added to [views].
+  Future<FlutterView> createPopupWindow(
+      FlutterView parent,
+      Size size,
+      Rect anchorRect,
+      FlutterViewPositioner positioner) async {
+    throw new UnsupportedError('PopupWindow is not currently supported on this system');
+    // Awaits the platform view creation response, and calls onViewCreated
+    // before returning.
+    // In the event that the platform does not support popups directly, the
+    // returned FlutterView may be one rendered on the parent.
+  }
+
+  /// Creates a new tip view and returns the view created.
+  ///
+  /// The [anchorRect] specifies the anchor rectangle within the parent surface
+  /// that the child surface will be placed relative to. The rectangle is
+  /// relative to the window geometry of the parent surface.
+  ///
+  /// The anchor rectangle may not extend outside the window geometry of the
+  /// parent surface.
+  ///
+  /// The size obtained and the one requested may not match, depending
+  /// on what the platform was able to accommodate.
+  ///
+  /// The future returns when the view has been created, and the view has been
+  /// added to [views].
+  Future<FlutterView> createTipWindow(
+      FlutterView parent,
+      Size size,
+      Rect anchorRect,
+      FlutterViewPositioner positioner) async {
+    throw new UnsupportedError('TipWindow is not currently supported on this system');
+    // Awaits the platform view creation response, and calls onViewCreated
+    // before returning.
+    // In the event that the platform does not support tips directly, the
+    // returned FlutterView may be one rendered on the parent.
+  }
+
+  /// Creates a new satellite view and returns the view created.
+  ///
+  /// The [anchorRect] specifies the anchor rectangle within the parent surface
+  /// that the child surface will be placed relative to. The rectangle is
+  /// relative to the window geometry of the parent surface.
+  ///
+  /// The anchor rectangle may not extend outside the window geometry of the
+  /// parent surface.
+  ///
+  /// The size obtained and the one requested may not match, depending
+  /// on what the platform was able to accommodate.
+  ///
+  /// The future returns when the view has been created, and the view has been
+  /// added to [views].
+  Future<FlutterView> createSatelliteWindow(
+      FlutterView parent,
+      Size size,
+      Rect anchorRect,
+      FlutterViewPositioner positioner) async {
+    throw new UnsupportedError('SatelliteWindow is not currently supported on this system');
+    // Awaits the platform view creation response, and calls onViewCreated
+    // before returning.
+    // In the event that the platform does not support tips directly, the
+    // returned FlutterView may be one rendered on the parent
+  }
 }
 
 /// Configuration of the platform.
@@ -1611,3 +1719,118 @@ class Locale {
     return out.toString();
   }
 }
+
+/// Defines the anchor point for the anchor rectangle or child view when
+/// positioning a View. The specified anchor is used to derive an anchor
+/// point on the anchor rectangle that the anchor point for the child View
+/// will be positioned relative to. If a corner anchor is set (e.g. [topLeft]
+/// or [bottomRight]), the anchor point will be at the specified corner;
+/// otherwise, the derived anchor point will be centered on the specified edge,
+/// or in the center of the anchor rectangle if no edge is specified.
+enum FlutterViewPositionerAnchor {
+  center,
+  top,
+  bottom,
+  left,
+  right,
+  topLeft,
+  bottomLeft,
+  topRight,
+  bottomRight,
+}
+
+/// The constraintAdjustment value define ways Flutter will adjust
+/// the position of the View, if the unadjusted position would result
+/// in the surface being partly constrained.
+///
+/// Whether a View is considered 'constrained' is left to the platform
+/// to determine. For example, the surface may be partly outside the
+/// compositor's defined 'work area', thus necessitating the child View's
+/// position be adjusted until it is entirely inside the work area.
+///
+/// "Flip" means reverse the anchor points and offset along an axis.
+/// "Slide" means adjust the offset along an axis.
+/// "Resize" means adjust the client window size along an axis.
+///
+/// The adjustments can be combined, according to a defined precedence: 1)
+/// Flip, 2) Slide, 3) Resize.
+enum FlutterViewPositionerConstraintAdjustment {
+  slideX,
+  slideY,
+  flipX,
+  flipY,
+  resizeX,
+  resizeY,
+}
+
+/// The FlutterViewPositioner provides a collection of rules for the placement of a
+/// child View relative to a parent View. Rules can be defined to ensure
+/// the child View remains within the visible area's borders, and to
+/// specify how the child View changes its position, such as sliding along
+/// an axis, or flipping around a rectangle.
+class FlutterViewPositioner {
+  /// Const constructor for [FlutterViewPositioner].
+  const FlutterViewPositioner({
+    this.parentAnchor = FlutterViewPositionerAnchor.center,
+    this.childAnchor = FlutterViewPositionerAnchor.center,
+    this.offset = Offset.zero,
+    this.constraintAdjustment = const {},
+  });
+
+  /// Copy a [FlutterViewPositioner] with some fields replaced.`
+  FlutterViewPositioner copyWith({
+    FlutterViewPositionerAnchor? parentAnchor,
+    FlutterViewPositionerAnchor? childAnchor,
+    Offset? offset,
+    Set<FlutterViewPositionerConstraintAdjustment>? constraintAdjustment,
+  }) {
+    return FlutterViewPositioner(
+      parentAnchor: parentAnchor ?? this.parentAnchor,
+      childAnchor: childAnchor ?? this.childAnchor,
+      offset: offset ?? this.offset,
+      constraintAdjustment: constraintAdjustment ?? this.constraintAdjustment,
+    );
+  }
+
+  /// Defines the anchor point for the anchor rectangle. The specified anchor
+  /// is used to derive an anchor point that the child View will be
+  /// positioned relative to. If a corner anchor is set (e.g. [topLeft] or
+  /// [bottomRight]), the anchor point will be at the specified corner;
+  /// otherwise, the derived anchor point will be centered on the specified
+  /// edge, or in the center of the anchor rectangle if no edge is specified.
+  final FlutterViewPositionerAnchor parentAnchor;
+
+  /// Defines the anchor point for the child view. The specified anchor
+  /// is used to derive an anchor point that will be positioned relative to the
+  /// parentAnchor. If a corner anchor is set (e.g. [topLeft] or
+  /// [bottomRight]), the anchor point will be at the specified corner;
+  /// otherwise, the derived anchor point will be centered on the specified
+  /// edge, or in the center of the anchor rectangle if no edge is specified.
+  final FlutterViewPositionerAnchor childAnchor;
+
+  /// Specify the View position offset relative to the position of the
+  /// anchor on the anchor rectangle and the anchor on the child. For
+  /// example if the anchor of the anchor rectangle is at (x, y), the View
+  /// has the child_anchor [topLeft], and the offset is (ox, oy), the calculated
+  /// View position will be (x + ox, y + oy). The offset position of the
+  /// View is the one used for constraint testing. See constraintAdjustment.
+  ///
+  /// An example use case is placing a popup menu on top of a user interface
+  /// element, while aligning the user interface element of the parent View
+  /// with some user interface element placed somewhere in the popup View.
+  final Offset offset;
+
+  /// The constraintAdjustment value define ways Flutter will adjust
+  /// the position of the View, if the unadjust position would result
+  /// in the surface being partly constrained.
+  ///
+  /// Whether a View is considered 'constrained' is left to the platform
+  /// to determine. For example, the surface may be partly outside the
+  /// output's 'work area', thus necessitating the child View's
+  /// position be adjusted until it is entirely inside the work area.
+  ///
+  /// The adjustments can be combined, according to a defined precedence: 1)
+  /// Flip, 2) Slide, 3) Resize.
+  final Set<FlutterViewPositionerConstraintAdjustment> constraintAdjustment;
+}
+
